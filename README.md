@@ -35,15 +35,15 @@ Edit the script and replace:
 - `your_bot_token` → Your Telegram bot token.
 - `your_chat_id` → Your Telegram chat ID.
 
-Save the script as `nmap_scan.sh` and make it executable:
+Save the script as `scan-ndiff.sh` and make it executable:
 ```sh
-chmod +x nmap_scan.sh
+chmod +x scan-ndiff.sh
 ```
 
 ### 3️⃣ Run the Script
 Execute manually:
 ```sh
-./nmap_scan.sh
+./scan-ndiff.sh
 ```
 
 ### 4️⃣ Automate with Crontab
@@ -53,7 +53,7 @@ crontab -e
 ```
 Add the following line:
 ```sh
-0 2 * * * /path/to/nmap_scan.sh >> /path/to/nmap_cron.log 2>&1
+0 2 * * * /path/to/scan-ndiff.sh >> /path/to/nmap_cron.log 2>&1
 ```
 Check if it's scheduled:
 ```sh
