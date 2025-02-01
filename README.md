@@ -27,6 +27,11 @@ docker run -d --name nmap-scanner \
 - Different targets can be separated with a space (e.g. 192.168.0.0/24 8.8.8.8/32)
 - For help with generation your CRON_SCHEDULE use e.g. https://crontab.guru/
 
+You can always manually start a scan with the following docker command, without waiting for the CRON job to start:
+```bash
+docker exec -it nmap-scanner /root/scans/scan-ndiff.sh
+```
+
 ### Manual installation
 
 
