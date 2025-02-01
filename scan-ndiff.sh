@@ -7,7 +7,13 @@ TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-your_bot_token}"
 TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-your_chat_id}"
 
 date=$(date +%F)
-cd /root/scans/results
+
+# Ensure /root/scans/results directory exists
+mkdir -p /root/scans/results
+cd /root/scans/results || exit 1
+
+# Housekeeping: Remove logfiles older than 1 month
+find /root/scans/results -type f \( -name "*.xml" -o -name "*.gnmap" -o -name "*.nmap" -o -name "diff-*.txt" \) -mtime +30 -exec rm {} \;
 
 # Separate IPv4 and IPv6 addresses
 IPV4_TARGETS=""
