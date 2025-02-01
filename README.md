@@ -15,7 +15,7 @@ You can either run the script within a **docker container** or install it manual
 ### Run the Docker Image
 
 ```bash
-docker run -d --name nmap-scanner \
+docker run -d --name ndiff-dailyscanner \
   -e TARGETS="your_targets" \
   -e OPTIONS="-v -T4 -F -sV" \
   -e TELEGRAM_BOT_TOKEN="your_telegram_bot_token" \
@@ -29,7 +29,7 @@ docker run -d --name nmap-scanner \
 
 You can always manually start a scan with the following docker command, without waiting for the CRON job to start:
 ```bash
-docker exec -it nmap-scanner /root/scans/scan-ndiff.sh
+docker exec -it ndiff-dailyscanner /root/scans/scan-ndiff.sh
 ```
 
 ### Manual installation
