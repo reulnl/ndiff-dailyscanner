@@ -7,7 +7,7 @@ TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-your_bot_token}"
 TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-your_chat_id}"
 
 date=$(date +%F)
-cd /root/scans
+cd /root/scans/results
 
 # Separate IPv4 and IPv6 addresses
 IPV4_TARGETS=""
