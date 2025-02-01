@@ -9,50 +9,65 @@ TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-your_chat_id}"
 date=$(date +%F)
 cd /root/scans
 
-# Run nmap scan
-nmap $OPTIONS $TARGETS -oA scan-$date > /dev/null
+# Separate IPv4 and IPv6 addresses
+IPV4_TARGETS=""
+IPV6_TARGETS=""
 
-# Display results in terminal
-echo "*** NMAP RESULTS ***"
-cat scan-$date.nmap
-
-# Check for previous scan results
-if [ -e scan-prev.xml ]; then
-    ndiff scan-prev.xml scan-$date.xml > diff-$date.txt  # Save with .txt extension
-
-    # Check if ndiff output is empty
-    if [ -s diff-$date.txt ]; then
-        echo "*** NDIFF RESULTS ***"
-        cat diff-$date.txt
-
-        # Check if the output is too long (> 4096 characters)
-        diff_size=$(wc -c < diff-$date.txt)
-        if [ "$diff_size" -gt 4000 ]; then
-            # Send message about large file
-            curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
-                 -d "chat_id=$TELEGRAM_CHAT_ID" \
-                 -d "text=*** NDIFF RESULTS ***%0AToo many differences - see attached file."
-
-            # Send as a file with .txt extension
-            curl -F "chat_id=$TELEGRAM_CHAT_ID" \
-                 -F "document=@diff-$date.txt" \
-                 "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument"
-        else
-            # Send as a message
-            diff_result=$(cat diff-$date.txt)
-            curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
-                 -d "chat_id=$TELEGRAM_CHAT_ID" \
-                 -d "text=*** NDIFF RESULTS ***%0A$diff_result"
-        fi
+for target in $TARGETS; do
+    if echo "$target" | grep -q ":"; then
+        IPV6_TARGETS="$IPV6_TARGETS $target"
     else
-        echo "No differences found."
-        
-        # Send "No differences found" message to Telegram
-        curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
-             -d "chat_id=$TELEGRAM_CHAT_ID" \
-             -d "text=*** NDIFF RESULTS ***%0ANo differences found."
+        IPV4_TARGETS="$IPV4_TARGETS $target"
+    fi
+done
+
+# Run IPv4 scan if there are IPv4 targets
+if [ -n "$IPV4_TARGETS" ]; then
+    nmap $OPTIONS $IPV4_TARGETS -oA scan-ipv4-$date > /dev/null
+fi
+
+# Run IPv6 scan if there are IPv6 targets
+if [ -n "$IPV6_TARGETS" ]; then
+    nmap -6 $OPTIONS $IPV6_TARGETS -oA scan-ipv6-$date > /dev/null
+fi
+
+# Combine ndiff results
+MESSAGE="*** NDIFF RESULTS ***"
+
+if [ -e scan-prev-ipv4.xml ] && [ -e scan-ipv4-$date.xml ]; then
+    ndiff scan-prev-ipv4.xml scan-ipv4-$date.xml > diff-ipv4-$date.txt
+    if [ -s diff-ipv4-$date.txt ]; then
+        MESSAGE="$MESSAGE%0A%0A*** IPv4 Changes ***%0A$(cat diff-ipv4-$date.txt)"
+    else
+        MESSAGE="$MESSAGE%0A%0A*** IPv4 Changes ***%0ANo differences found."
     fi
 fi
 
-# Update symlink for previous scan
-ln -sf scan-$date.xml scan-prev.xml
+if [ -e scan-prev-ipv6.xml ] && [ -e scan-ipv6-$date.xml ]; then
+    ndiff scan-prev-ipv6.xml scan-ipv6-$date.xml > diff-ipv6-$date.txt
+    if [ -s diff-ipv6-$date.txt ]; then
+        MESSAGE="$MESSAGE%0A%0A*** IPv6 Changes ***%0A$(cat diff-ipv6-$date.txt)"
+    else
+        MESSAGE="$MESSAGE%0A%0A*** IPv6 Changes ***%0ANo differences found."
+    fi
+fi
+
+# Check total message size
+MESSAGE_SIZE=${#MESSAGE}
+if [ "$MESSAGE_SIZE" -gt 4000 ]; then
+    echo "$MESSAGE" > combined-diff-$date.txt
+    curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+        -d "chat_id=$TELEGRAM_CHAT_ID" \
+        -d "text=Too many differences - see attached file."
+    curl -F "chat_id=$TELEGRAM_CHAT_ID" \
+        -F "document=@combined-diff-$date.txt" \
+        "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument"
+else
+    curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+        -d "chat_id=$TELEGRAM_CHAT_ID" \
+        -d "text=$MESSAGE"
+fi
+
+# Update previous scan references
+[ -e scan-ipv4-$date.xml ] && ln -sf scan-ipv4-$date.xml scan-prev-ipv4.xml
+[ -e scan-ipv6-$date.xml ] && ln -sf scan-ipv6-$date.xml scan-prev-ipv6.xml
