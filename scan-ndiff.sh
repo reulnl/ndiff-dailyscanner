@@ -41,7 +41,7 @@ fi
 MESSAGE="*** NDIFF RESULTS ***"
 
 if [ -e scan-prev-ipv4.xml ] && [ -e scan-ipv4-$date.xml ]; then
-    ndiff scan-prev-ipv4.xml scan-ipv4-$date.xml | grep -v "^ Nmap" > diff-ipv4-$date.txt
+    ndiff scan-prev-ipv4.xml scan-ipv4-$date.xml | grep -Ev "^( Nmap|\+Nmap|-Nmap)" > diff-ipv4-$date.txt
     if [ -s diff-ipv4-$date.txt ]; then
         MESSAGE="$MESSAGE%0A%0A*** IPv4 Changes ***%0A$(cat diff-ipv4-$date.txt)"
     else
@@ -50,7 +50,7 @@ if [ -e scan-prev-ipv4.xml ] && [ -e scan-ipv4-$date.xml ]; then
 fi
 
 if [ -e scan-prev-ipv6.xml ] && [ -e scan-ipv6-$date.xml ]; then
-    ndiff scan-prev-ipv6.xml scan-ipv6-$date.xml | grep -v "^ Nmap" > diff-ipv6-$date.txt
+    ndiff scan-prev-ipv6.xml scan-ipv6-$date.xml | grep -Ev "^( Nmap|\+Nmap|-Nmap)" > diff-ipv6-$date.txt
     if [ -s diff-ipv6-$date.txt ]; then
         MESSAGE="$MESSAGE%0A%0A*** IPv6 Changes ***%0A$(cat diff-ipv6-$date.txt)"
     else
