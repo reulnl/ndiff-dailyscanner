@@ -21,6 +21,7 @@ docker run -d --name ndiff-dailyscanner \
   -e TELEGRAM_BOT_TOKEN="your_telegram_bot_token" \
   -e TELEGRAM_CHAT_ID="your_chat_id" \
   -e CRON_SCHEDULE="* 2 * * *" \
+  -v /usr/local/ndiff-dailyscanner:/root/scans/results \
   ghcr.io/reulnl/ndiff-dailyscanner:latest
 ```
 
