@@ -1,9 +1,12 @@
 #!/bin/sh
-TARGETS="<targets>"
-OPTIONS="-v -T4 -F -sV"
-TELEGRAM_BOT_TOKEN="your_bot_token"
-TELEGRAM_CHAT_ID="your_chat_id"
-date=`date +%F`
+
+# Read environment variables
+TARGETS="${TARGETS:-<default_targets>}"
+OPTIONS="${OPTIONS:-"-v -T4 -F -sV"}"
+TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-your_bot_token}"
+TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-your_chat_id}"
+
+date=$(date +%F)
 cd /root/scans
 
 # Run nmap scan
