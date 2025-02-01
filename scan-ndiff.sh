@@ -12,9 +12,6 @@ date=$(date +%F)
 mkdir -p /root/scans/results
 cd /root/scans/results || exit 1
 
-# Housekeeping: Remove logfiles older than 1 month
-find /root/scans/results -type f \( -name "*.xml" -o -name "*.gnmap" -o -name "*.nmap" -o -name "diff-*.txt" \) -mtime +30 -exec rm {} \;
-
 # Separate IPv4 and IPv6 addresses
 IPV4_TARGETS=""
 IPV6_TARGETS=""
@@ -64,7 +61,7 @@ if [ "$MESSAGE_SIZE" -gt 4000 ]; then
     echo "$MESSAGE" > combined-diff-$date.txt
     curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
         -d "chat_id=$TELEGRAM_CHAT_ID" \
-        -d "text=Too many differences - see attached file."
+        -d "text=*** NDIFF RESULTS ***%0AToo many differences - see attached file:"
     curl -F "chat_id=$TELEGRAM_CHAT_ID" \
         -F "document=@combined-diff-$date.txt" \
         "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument"
@@ -77,3 +74,6 @@ fi
 # Update previous scan references
 [ -e scan-ipv4-$date.xml ] && ln -sf scan-ipv4-$date.xml scan-prev-ipv4.xml
 [ -e scan-ipv6-$date.xml ] && ln -sf scan-ipv6-$date.xml scan-prev-ipv6.xml
+
+# Housekeeping: Remove logfiles older than 1 month
+find /root/scans/results -type f \( -name "*.xml" -o -name "*.gnmap" -o -name "*.nmap" -o -name "diff-*.txt" \) -mtime +30 -exec rm {} \;
