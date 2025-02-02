@@ -12,11 +12,14 @@ RUN apt update && apt install -y \
     cron \
     tzdata \
     python3 \
+    python3-venv \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python package for calculating cron execution times
-RUN pip install croniter
+# Set up a Python virtual environment and install croniter
+RUN python3 -m venv /root/venv && \
+    /root/venv/bin/pip install --upgrade pip && \
+    /root/venv/bin/pip install croniter
 
 # Copy the script into the container
 COPY scan-ndiff.sh /root/scans/scan-ndiff.sh
@@ -43,7 +46,7 @@ chmod 0644 /etc/crontab\n\
 crontab /etc/crontab\n\
 \n\
 # Get next execution time using Python (croniter)\n\
-NEXT_RUN=$(python3 -c "from croniter import croniter; from datetime import datetime; import os;\n\
+NEXT_RUN=$(/root/venv/bin/python3 -c "from croniter import croniter; from datetime import datetime; import os;\n\
 tz = os.getenv(\'TZ\', \'UTC\')\n\
 current_time = datetime.now()\n\
 cron_schedule = os.getenv(\'CRON_SCHEDULE\', \'0 2 * * *\')\n\
