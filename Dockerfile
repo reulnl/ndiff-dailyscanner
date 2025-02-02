@@ -27,9 +27,16 @@ ENV CRON_SCHEDULE="0 2 * * *"
 
 # Create a script to update cron dynamically based on CRON_SCHEDULE
 RUN echo '#!/bin/sh\n\
+echo "=============== ndiff-dailyscanner ==============="\n\
+env\n\
+echo "=================================================="\n\
+echo "Setting up cron job with schedule: $CRON_SCHEDULE"\n\
 echo "$CRON_SCHEDULE /root/scans/scan-ndiff.sh  >> /proc/1/fd/1 2>> /proc/1/fd/2" > /etc/crontab\n\
 chmod 0644 /etc/crontab\n\
 crontab /etc/crontab\n\
+NEXT_RUN=$(echo "$CRON_SCHEDULE" | awk "{print \"Next run time: \" \$0}")\n\
+echo "Cron job successfully added! $NEXT_RUN"\n\
+echo "=================================================="\n\
 cron -f' > /root/start-cron.sh && chmod +x /root/start-cron.sh
 
 # Start cron using the dynamic schedule
