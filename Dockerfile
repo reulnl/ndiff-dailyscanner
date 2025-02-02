@@ -29,7 +29,7 @@ ENV OPTIONS="-v -T4 -F -sV"
 ENV TELEGRAM_BOT_TOKEN="your_bot_token"
 ENV TELEGRAM_CHAT_ID="your_chat_id"
 ENV CRON_SCHEDULE="0 2 * * *" 
-ENV TZ="UTC"  # Set default timezone, change if needed
+ENV TZ="UTC"
 
 # Create a script to update cron dynamically based on CRON_SCHEDULE
 RUN echo '#!/bin/sh\n\
