@@ -8,6 +8,14 @@ TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-your_chat_id}"
 
 date=$(date +%F)
 
+echo "=============== ndiff-dailyscanner ==============="
+echo ""
+date
+echo "Starting daily scan"
+echo ""
+env
+echo "=================================================="
+
 # Ensure /root/scans/results directory exists
 mkdir -p /root/scans/results
 cd /root/scans/results || exit 1
@@ -77,3 +85,10 @@ fi
 
 # Housekeeping: Remove logfiles older than 1 month
 find /root/scans/results -type f \( -name "*.xml" -o -name "*.gnmap" -o -name "*.nmap" -o -name "diff-*.txt" \) -mtime +30 -exec rm {} \;
+
+echo "=================================================="
+echo ""
+date
+echo "Daily scan finished"
+echo ""
+echo "=================================================="
