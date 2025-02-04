@@ -15,7 +15,7 @@ echo "Starting daily scan"
 echo ""
 env
 echo "=================================================="
-
+echo ""
 # Ensure /root/scans/results directory exists
 mkdir -p /root/scans/results
 cd /root/scans/results || exit 1
@@ -86,6 +86,7 @@ fi
 # Housekeeping: Remove logfiles older than 1 month
 find /root/scans/results -type f \( -name "*.xml" -o -name "*.gnmap" -o -name "*.nmap" -o -name "diff-*.txt" \) -mtime +30 -exec rm {} \;
 
+echo ""
 echo "=================================================="
 echo ""
 date
