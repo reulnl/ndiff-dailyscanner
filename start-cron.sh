@@ -34,6 +34,7 @@ if [ -z "$NEXT_RUN" ]; then
 fi
 
 # Convert to human-readable format
+if [ -n "$NEXT_RUN" ]; then
 NEXT_RUN_TIMESTAMP=$(date -d "$NEXT_RUN" +"%Y-%m-%d %H:%M:%S %Z" 2>/dev/null)
 
 if [ -z "$NEXT_RUN_TIMESTAMP" ]; then
@@ -44,6 +45,10 @@ fi
 # Calculate time left
 CURRENT_TIME=$(date +"%s")
 NEXT_RUN_TIME=$(date -d "$NEXT_RUN" +"%s" 2>/dev/null)
+else
+    echo "Error: NEXT_RUN is empty or invalid"
+    exit 1
+fi
 
 if [ -z "$NEXT_RUN_TIME" ]; then
     echo "ERROR: Failed to calculate the next run timestamp."
