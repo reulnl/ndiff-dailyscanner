@@ -62,5 +62,6 @@ MINUTES_LEFT=$(((SECONDS_LEFT % 3600) / 60))
 echo "Cron job successfully added! Next run time: $NEXT_RUN_TIMESTAMP"
 echo "Time left until next execution: ${HOURS_LEFT}h ${MINUTES_LEFT}m"
 
-# Start cron
+# Export all env variables and start cron
+printenv | grep -v >> /etc/environment
 cron -f
