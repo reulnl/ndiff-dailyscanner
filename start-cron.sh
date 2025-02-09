@@ -63,5 +63,5 @@ echo "Cron job successfully added! Next run time: $NEXT_RUN_TIMESTAMP"
 echo "Time left until next execution: ${HOURS_LEFT}h ${MINUTES_LEFT}m"
 
 # Export all env variables and start cron
-printenv | grep -v >> /etc/environment
+printenv > /etc/environment
 cron -f
