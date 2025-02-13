@@ -1,11 +1,4 @@
 #!/bin/sh
-LOCKFILE="/tmp/scan-ndiff.lock"
-
-# Acquire a non-blocking lock
-if ! flock -n 9; then
-    echo "Another instance is already running. Exiting..."
-    exit 1
-fi
 
 # Read environment variables
 TARGETS="${TARGETS:-<default_targets>}"
