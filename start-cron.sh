@@ -6,7 +6,7 @@ echo "=================================================="
 echo "Setting up cron job with schedule: $CRON_SCHEDULE"
 
 # Write cron schedule to crontab and make sure the script will only run once
-echo "$CRON_SCHEDULE flock -n /tmp/scan-ndiff.lock /root/scans/scan-ndiff.sh >> /proc/1/fd/1 2>> /proc/1/fd/2" > /etc/crontab
+echo "$CRON_SCHEDULE flock -n /root/scans/scan-ndiff.lock /root/scans/scan-ndiff.sh >> /proc/1/fd/1 2>> /proc/1/fd/2" > /etc/crontab
 chmod 0644 /etc/crontab
 crontab /etc/crontab
 
