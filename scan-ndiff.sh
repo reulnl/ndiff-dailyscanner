@@ -1,9 +1,11 @@
 #!/bin/sh
 LOCKFILE="/tmp/scan-ndiff.lock"
 
-# Try acquiring the lock, exit if already locked
-exec 200>$LOCKFILE
-flock -n 200 || { echo "Another instance is already running. Exiting..."; exit 1; }
+# Acquire a non-blocking lock
+if ! flock -n 9; then
+    echo "Another instance is already running. Exiting..."
+    exit 1
+fi
 
 # Read environment variables
 TARGETS="${TARGETS:-<default_targets>}"
@@ -98,3 +100,6 @@ date
 echo "Daily scan finished"
 echo ""
 echo "=================================================="
+
+# Hold the lock until the script exits
+exec 9>$LOCKFILE
